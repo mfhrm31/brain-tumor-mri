@@ -1,0 +1,56 @@
+# Brain Tumor MRI — ResNet50 Configuration
+
+model:
+  backbone: "resnet50"
+  pretrained: true
+  num_classes: 4
+  dropout: 0.3
+  freeze_backbone_epochs: 5
+
+classes:
+  - glioma
+  - meningioma
+  - pituitary
+  - notumor
+
+data:
+  data_dir: "data/brain_tumor/"
+  train_subdir: "Training"
+  test_subdir: "Testing"
+  image_size: 224
+  batch_size: 32
+  num_workers: 4
+  val_split: 0.15
+
+augmentation:
+  random_horizontal_flip: false  # Brain asymmetry is clinically relevant
+  random_rotation_degrees: 15
+  random_brightness: 0.1
+  random_contrast: 0.1
+  histogram_equalization: true
+
+training:
+  epochs: 40
+  optimizer: "adam"
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  lr_scheduler: "cosine"
+  class_weights: "balanced"
+  early_stopping_patience: 8
+
+evaluation:
+  metrics:
+    - accuracy
+    - precision_per_class
+    - recall_per_class
+    - f1_per_class
+    - confusion_matrix
+  save_confusion_matrix: true
+  interpretability:
+    gradcam_layer: "layer4"
+    save_heatmaps: true
+
+paths:
+  output_dir: "outputs/resnet50/"
+  checkpoint_name: "best_model.pt"
+  log_file: "training.log"
